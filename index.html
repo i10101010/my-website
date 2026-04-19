@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Links</title>
+  <style>
+    :root[data-theme="dark"] {
+      --bg-page:      #0f0f0f;
+      --bg-card:      #1a1a1a;
+      --bg-input:     #222222;
+      --bg-hover:     #242424;
+      --bg-nav:       #141414;
+      --border:       #2e2e2e;
+      --border-hover: #444;
+      --text-primary: #f0f0f0;
+      --text-muted:   #666;
+      --text-label:   #aaa;
+      --btn-bg:       #f0f0f0;
+      --btn-text:     #0f0f0f;
+      --error:        #f87171;
+      --shadow:       0 2px 16px rgba(0,0,0,0.5);
+      --nav-shadow:   0 1px 0 #2e2e2e;
+    }
+
+    :root[data-theme="light"] {
+      --bg-page:      #f4f4f0;
+      --bg-card:      #ffffff;
+      --bg-input:     #fafaf8;
+      --bg-hover:     #f0ede8;
+      --bg-nav:       #ffffff;
+      --border:       #e0ddd5;
+      --border-hover: #bbb;
+      --text-primary: #1a1a1a;
+      --text-muted:   #999;
+      --text-label:   #555;
+      --btn-bg:       #1a1a1a;
+      --btn-text:     #ffffff;
+      --error:        #c0392b;
+      --shadow:       0 2px 12px rgba(0,0,0,0.07);
+      --nav-shadow:   0 1px 0 #e0ddd5;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg-page);
+      min-height: 100vh;
+      color: var(--text-primary);
+      transition: background 0.25s, color 0.25s;
+    }
+
+    /* ── SCREENS ── */
+    .screen { display: none; min-height: 100vh; flex-direction: column; }
+    .screen.active { display: flex; }
+
+    /* ── THEME PILL (login screen only) ── */
+    .theme-pill-wrap {
+      display: flex;
+      justify-content: flex-end;
+      padding: 20px 24px 0;
+    }
+
+    .theme-pill {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 6px 14px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-label);
+      transition: background 0.2s, border-color 0.2s, color 0.2s;
+    }
+    .theme-pill:hover { border-color: var(--border-hover); color: var(--text-primary); }
+
+    /* ── LOGIN ── */
+    #loginScreen {
+      min-height: 100vh;
+    }
+
+    .login-body {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      min-height: calc(100vh - 64px);
+    }
+
+    .login-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 2.25rem 2rem 2rem;
+      width: 100%;
+      max-width: 380px;
+      box-shadow: var(--shadow);
+      transition: background 0.25s, border-color 0.25s, box-shadow 0.25s;
+    }
+
+    .login-card h1 {
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: var(--text-primary);
+    }
+
+    .login-card .subtitle {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 1.75rem;
+    }
+
+    .field { margin-bottom: 1.1rem; }
+
+    .field label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-label);
+      margin-bottom: 6px;
+    }
+
+    .field input {
+      width: 100%;
+      padding: 10px 14px;
+      font-size: 14px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--bg-input);
+      color: var(--text-primary);
+      outline: none;
+      transition: border-color 0.15s, background 0.25s;
+    }
+
+    .field input:focus { border-color: var(--border-hover); }
+    .field input::placeholder { color: var(--text-muted); }
+
+    .error-msg {
+      font-size: 12.5px;
+      color: var(--error);
+      margin-bottom: 14px;
+      min-height: 18px;
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 11px;
+      font-size: 15px;
+      font-weight: 600;
+      background: var(--btn-bg);
+      color: var(--btn-text);
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: opacity 0.15s, background 0.25s, color 0.25s;
+    }
+
+    .login-btn:hover { opacity: 0.82; }
+    .login-btn:active { opacity: 0.65; transform: scale(0.99); }
+
+    /* ── DASHBOARD NAVBAR ── */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: var(--bg-nav);
+      box-shadow: var(--nav-shadow);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      height: 56px;
+      transition: background 0.25s, box-shadow 0.25s;
+    }
+
+    .navbar-brand {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+    }
+
+    .navbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .icon-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text-label);
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+      flex-shrink: 0;
+    }
+    .icon-btn:hover { background: var(--bg-hover); border-color: var(--border-hover); color: var(--text-primary); }
+    .icon-btn:active { transform: scale(0.95); }
+
+    .sign-out-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0 14px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-label);
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+      white-space: nowrap;
+    }
+    .sign-out-btn:hover { background: var(--bg-hover); border-color: var(--border-hover); color: var(--text-primary); }
+    .sign-out-btn:active { transform: scale(0.97); }
+
+    /* ── DASHBOARD CONTENT ── */
+    .dash-content {
+      flex: 1;
+      padding: 2.5rem 2rem;
+      max-width: 760px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .dash-content h2 {
+      font-size: 13px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--text-muted);
+      margin-bottom: 1.25rem;
+    }
+
+    .links-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 14px;
+    }
+
+    .link-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.4rem 1.25rem 1.2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 14px;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      transition: background 0.15s, border-color 0.15s, transform 0.1s, box-shadow 0.15s;
+    }
+
+    .link-card:hover {
+      background: var(--bg-hover);
+      border-color: var(--border-hover);
+      box-shadow: var(--shadow);
+    }
+    .link-card:active { transform: scale(0.97); }
+
+    .link-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .link-card .label {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .link-card .sublabel {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .link-card .arrow {
+      font-size: 16px;
+      color: var(--text-muted);
+      align-self: flex-end;
+      margin-top: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── LOGIN SCREEN ── -->
+  <div id="loginScreen" class="screen active">
+    <div class="theme-pill-wrap">
+      <button class="theme-pill" onclick="toggleTheme()" id="themePillLogin">
+        <svg id="themeIconLogin" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="5"/>
+          <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+          <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+        </svg>
+        <span id="themeLabelLogin">Light mode</span>
+      </button>
+    </div>
+
+    <div class="login-body">
+      <div class="login-card">
+        <h1>Welcome back</h1>
+        <p class="subtitle">Sign in to access your links</p>
+
+        <div class="field">
+          <label for="username">Username</label>
+          <input type="text" id="username" placeholder="Enter username" />
+        </div>
+
+        <div class="field">
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="Enter password" />
+        </div>
+
+        <div class="error-msg" id="errMsg"></div>
+        <button class="login-btn" onclick="doLogin()">Sign in</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── DASHBOARD SCREEN ── -->
+  <div id="dashScreen" class="screen">
+
+    <!-- Sticky Navbar -->
+    <nav class="navbar">
+      <span class="navbar-brand">My Links</span>
+      <div class="navbar-actions">
+
+        <!-- Theme toggle icon button -->
+        <button class="icon-btn" onclick="toggleTheme()" title="Toggle theme" id="themeIconBtn">
+          <svg id="themeIconDash" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"/>
+            <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+            <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+          </svg>
+        </button>
+
+        <!-- Sign out button -->
+        <button class="sign-out-btn" onclick="doLogout()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+            <polyline points="16 17 21 12 16 7"/>
+            <line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+          Sign out
+        </button>
+
+      </div>
+    </nav>
+
+    <!-- Page content -->
+    <div class="dash-content">
+      <h2>Your links</h2>
+      <div class="links-grid" id="linksGrid"></div>
+    </div>
+
+  </div>
+
+  <script>
+    // ─────────────────────────────────────────
+    // CREDENTIALS — change these to log in
+    // ─────────────────────────────────────────
+    const CREDENTIALS = {
+      username: "admin",
+      password: "12345"
+    };
+
+    // ─────────────────────────────────────────
+    // LINKS — customize your buttons here
+    // ─────────────────────────────────────────
+    const LINKS = [
+      {
+        label: "GitHub",
+        sublabel: "My repositories",
+        url: "https://github.com/YOUR_USERNAME",      // ← replace with your GitHub URL
+        bgColor: "#1a1a1a",
+        icon: `<svg width="22" height="22" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.009-.868-.014-1.703-2.782.604-3.369-1.342-3.369-1.342-.454-1.154-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.337 4.687-4.565 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.741 0 .267.18.578.688.48C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg>`
+      },
+      {
+        label: "Instagram",
+        sublabel: "My photos",
+        url: "https://instagram.com/YOUR_USERNAME",   // ← replace with your Instagram URL
+        bgColor: "#E1306C",
+        icon: `<svg width="22" height="22" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>`
+      },
+      {
+        label: "YouTube",
+        sublabel: "My videos",
+        url: "https://youtube.com/@YOUR_USERNAME",    // ← replace with your YouTube URL
+        bgColor: "#FF0000",
+        icon: `<svg width="22" height="22" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg"><path d="M23.495 6.205a3.007 3.007 0 00-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 00.527 6.205a31.247 31.247 0 00-.522 5.805 31.247 31.247 0 00.522 5.783 3.007 3.007 0 002.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 002.088-2.088 31.247 31.247 0 00.5-5.783 31.247 31.247 0 00-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/></svg>`
+      }
+    ];
+
+    // ─────────────────────────────────────────
+    // THEME TOGGLE
+    // ─────────────────────────────────────────
+    let isDark = true;
+
+    const moonSVG = `<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>`;
+    const sunSVG  = `
+      <circle cx="12" cy="12" r="5"/>
+      <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+      <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+    `;
+
+    function setThemeIcons() {
+      const icon = isDark ? sunSVG : moonSVG;
+      document.getElementById("themeIconLogin").innerHTML = icon;
+      document.getElementById("themeIconDash").innerHTML = icon;
+      document.getElementById("themeLabelLogin").textContent = isDark ? "Light mode" : "Dark mode";
+    }
+
+    function toggleTheme() {
+      isDark = !isDark;
+      document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light");
+      setThemeIcons();
+    }
+
+    // ─────────────────────────────────────────
+    // APP LOGIC
+    // ─────────────────────────────────────────
+    function renderLinks() {
+      const grid = document.getElementById("linksGrid");
+      grid.innerHTML = LINKS.map(link => `
+        <a class="link-card" href="${link.url}" target="_blank" rel="noopener noreferrer">
+          <div class="link-icon" style="background: ${link.bgColor};">
+            ${link.icon}
+          </div>
+          <div>
+            <div class="label">${link.label}</div>
+            <div class="sublabel">${link.sublabel}</div>
+          </div>
+          <span class="arrow">↗</span>
+        </a>
+      `).join('');
+    }
+
+    function doLogin() {
+      const u = document.getElementById("username").value.trim();
+      const p = document.getElementById("password").value.trim();
+      const err = document.getElementById("errMsg");
+
+      if (u === CREDENTIALS.username && p === CREDENTIALS.password) {
+        err.textContent = "";
+        document.getElementById("loginScreen").classList.remove("active");
+        document.getElementById("dashScreen").classList.add("active");
+        renderLinks();
+      } else {
+        err.textContent = "Incorrect username or password.";
+      }
+    }
+
+    function doLogout() {
+      document.getElementById("dashScreen").classList.remove("active");
+      document.getElementById("loginScreen").classList.add("active");
+      document.getElementById("username").value = "";
+      document.getElementById("password").value = "";
+      document.getElementById("errMsg").textContent = "";
+    }
+
+    document.getElementById("username").addEventListener("keydown", e => {
+      if (e.key === "Enter") document.getElementById("password").focus();
+    });
+
+    document.getElementById("password").addEventListener("keydown", e => {
+      if (e.key === "Enter") doLogin();
+    });
+  </script>
+</body>
+</html>
